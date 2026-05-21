@@ -1,0 +1,36 @@
+seed: 3830
+data_dir: data
+checkpoint_dir: checkpoints
+results_dir: results
+
+model:
+  name: resnet18
+  num_classes: 10
+
+train:
+  epochs: 5
+  batch_size: 128
+  lr: 0.1
+  momentum: 0.9
+  weight_decay: 0.0005
+  num_workers: 2
+  subset_size: null
+
+eval:
+  batch_size: 128
+  num_workers: 2
+  subset_size: null
+  corruptions:
+    - gaussian_noise
+    - gaussian_blur
+    - motion_blur
+    - brightness
+    - contrast
+    - pixelate
+    - jpeg
+  severities: [1, 2, 3, 4, 5]
+
+tta:
+  lr: 0.001
+  steps: 1
+  thresholds: [0.5, 0.7, 0.9]

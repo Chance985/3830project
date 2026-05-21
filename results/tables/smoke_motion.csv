@@ -1,0 +1,2 @@
+method,threshold,corruption,severity,accuracy,error_rate,nll,entropy,ece,runtime_sec,selected_fraction,num_samples,subset_size,tta_lr,tta_steps
+source,,motion_blur,3,0.40625,0.59375,1.8663222789764404,0.9896097183227539,0.2510371208190918,0.22260400000000002,0.0,64,64,,
