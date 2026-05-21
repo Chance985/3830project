@@ -20,8 +20,10 @@ class EvalResult:
     entropy: float
     ece: float
     runtime_sec: float
+    runtime_per_batch_sec: float
     selected_fraction: float
     num_samples: int
+    num_batches: int
 
 
 def clone_model(model: nn.Module, device: torch.device) -> nn.Module:
@@ -82,7 +84,12 @@ def _collect_batch_stats(
     totals["targets"].append(targets.detach())
 
 
-def _finalize(totals: Dict[str, torch.Tensor], runtime_sec: float, selected_fraction: float) -> EvalResult:
+def _finalize(
+    totals: Dict[str, torch.Tensor],
+    runtime_sec: float,
+    selected_fraction: float,
+    num_batches: int,
+) -> EvalResult:
     count = int(totals["count"].item())
     confidences = torch.cat(totals["confidences"]) if totals["confidences"] else torch.empty(0)
     predictions = torch.cat(totals["predictions"]) if totals["predictions"] else torch.empty(0, dtype=torch.long)
@@ -95,8 +102,10 @@ def _finalize(totals: Dict[str, torch.Tensor], runtime_sec: float, selected_frac
         entropy=(totals["entropy"] / totals["count"]).item(),
         ece=expected_calibration_error(confidences, predictions, targets),
         runtime_sec=runtime_sec,
+        runtime_per_batch_sec=runtime_sec / max(1, num_batches),
         selected_fraction=selected_fraction,
         num_samples=count,
+        num_batches=num_batches,
     )
 
 
@@ -135,9 +144,11 @@ def evaluate_stream(
     }
     selected_total = 0
     seen_total = 0
+    num_batches = 0
     start = time.perf_counter()
 
     for inputs, targets in loader:
+        num_batches += 1
         inputs = inputs.to(device, non_blocking=True)
         targets = targets.to(device, non_blocking=True)
         seen_total += targets.numel()
@@ -179,4 +190,4 @@ def evaluate_stream(
         selected_fraction = 1.0
     else:
         selected_fraction = selected_total / max(1, seen_total * max(1, steps))
-    return _finalize(totals, runtime, selected_fraction)
+    return _finalize(totals, runtime, selected_fraction, num_batches)

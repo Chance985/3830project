@@ -10,6 +10,10 @@ __pycache__/
 venv/
 env/
 
+# Local credentials
+.env
+.env.*
+
 # Local editor and OS files
 .vscode/
 .idea/
@@ -18,6 +22,11 @@ Thumbs.db
 
 # Re-downloadable datasets
 data/
+.cache/
+cache/
+
+# Regenerable model checkpoints
+checkpoints/*.pt
 
 # Temporary outputs
 *.tmp

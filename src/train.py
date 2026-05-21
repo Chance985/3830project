@@ -10,6 +10,7 @@ from tqdm import tqdm
 
 from .datasets import make_eval_loader, make_train_loader
 from .models import build_model, save_checkpoint
+from .training_plots import plot_training_curves
 from .utils import accuracy_from_logits, ensure_dir, get_device, load_config, seed_everything, write_rows_csv
 
 
@@ -28,6 +29,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--device", default="auto")
     parser.add_argument("--run-name", default="resnet18_cifar10")
+    parser.add_argument("--log-dir", default=None)
+    parser.add_argument("--curves-dir", default=None)
     return parser.parse_args()
 
 
@@ -39,6 +42,8 @@ def main() -> None:
 
     data_dir = args.data_dir or cfg["data_dir"]
     checkpoint_dir = ensure_dir(args.checkpoint_dir or cfg["checkpoint_dir"])
+    log_dir = ensure_dir(args.log_dir or cfg.get("log_dir", "logs"))
+    curves_dir = ensure_dir(args.curves_dir or cfg.get("figures_dir", "results/figures"))
     train_cfg = cfg["train"]
     epochs = args.epochs or train_cfg["epochs"]
     batch_size = args.batch_size or train_cfg["batch_size"]
@@ -141,9 +146,14 @@ def main() -> None:
                 extra={"config": cfg, "run_name": args.run_name},
             )
 
-    write_rows_csv(Path("logs") / f"{args.run_name}_train_log.csv", rows)
+    log_path = log_dir / f"{args.run_name}_train_log.csv"
+    curve_path = curves_dir / f"{args.run_name}_training_curves.png"
+    write_rows_csv(log_path, rows)
+    plot_training_curves(log_path, curve_path)
     print(f"best checkpoint: {best_path}")
     print(f"best clean accuracy: {best_acc:.4f}")
+    print(f"training log: {log_path}")
+    print(f"training curves: {curve_path}")
 
 
 if __name__ == "__main__":

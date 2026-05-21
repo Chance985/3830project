@@ -1,11 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+CHECKPOINT="${CHECKPOINT:-checkpoints/resnet18_cifar10_50ep_best.pt}"
+BATCH_SIZE="${BATCH_SIZE:-256}"
+NUM_WORKERS="${NUM_WORKERS:-0}"
+SUBSET_SIZE="${SUBSET_SIZE:-2000}"
+SEED="${SEED:-3830}"
+OUTPUT="${OUTPUT:-results/tables/entropy_results.csv}"
+EXTRA_ARGS=()
+if [[ "${FULL_TEST:-0}" == "1" ]]; then
+  EXTRA_ARGS+=(--full-test)
+else
+  EXTRA_ARGS+=(--subset-size "${SUBSET_SIZE}")
+fi
+
 python -m src.evaluate \
-  --checkpoint checkpoints/resnet18_cifar10_5ep_best.pt \
+  --checkpoint "${CHECKPOINT}" \
   --methods entropy \
-  --batch-size 256 \
-  --num-workers 0 \
-  --subset-size 2000 \
+  --batch-size "${BATCH_SIZE}" \
+  --num-workers "${NUM_WORKERS}" \
+  --seed "${SEED}" \
   --include-clean \
-  --output results/tables/entropy_results.csv
+  --output "${OUTPUT}" \
+  "${EXTRA_ARGS[@]}"

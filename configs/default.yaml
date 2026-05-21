@@ -2,23 +2,27 @@ seed: 3830
 data_dir: data
 checkpoint_dir: checkpoints
 results_dir: results
+log_dir: logs
+figures_dir: results/figures
 
 model:
   name: resnet18
   num_classes: 10
 
 train:
-  epochs: 5
-  batch_size: 128
+  epochs: 50
+  batch_size: 256
   lr: 0.1
   momentum: 0.9
   weight_decay: 0.0005
-  num_workers: 2
+  num_workers: 0
   subset_size: null
 
 eval:
-  batch_size: 128
-  num_workers: 2
+  dataset: synthetic
+  cifar10c_dir: null
+  batch_size: 256
+  num_workers: 0
   subset_size: null
   corruptions:
     - gaussian_noise
