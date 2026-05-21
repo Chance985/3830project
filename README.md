@@ -127,6 +127,38 @@ python -m src.plot_results --input results\tables\raw_results.csv --tables-dir r
 
 All reported tables and plots are regenerated from saved CSV files. Do not report CIFAR-10-C or multi-seed results unless those commands have actually been run.
 
+## Final Submission Checklist
+
+- GitHub repository: `https://github.com/Chance985/3830project`
+- Report PDF: `report/project_report.pdf`
+- Presentation PPTX: `slides/presentation.pptx`
+- Final result CSV: `results/tables/raw_results.csv`
+- Final figures: `results/figures/`
+
+Exact final training command:
+
+```powershell
+python -m src.train --epochs 50 --batch-size 256 --num-workers 0 --seed 3830 --run-name resnet18_cifar10_50ep
+```
+
+Exact final evaluation command:
+
+```powershell
+python -m src.evaluate --checkpoint checkpoints\resnet18_cifar10_50ep_best.pt --dataset synthetic --methods source,bn,entropy,gated --thresholds 0.5,0.7,0.9 --batch-size 256 --num-workers 0 --seed 3830 --full-test --include-clean --output results\tables\raw_results.csv
+```
+
+Exact final table and figure regeneration command:
+
+```powershell
+python -m src.plot_results --input results\tables\raw_results.csv --tables-dir results\tables --figures-dir results\figures
+```
+
+Exact final training-curve regeneration command:
+
+```powershell
+python -m src.training_plots --input logs\resnet18_cifar10_50ep_train_log.csv --output results\figures\resnet18_cifar10_50ep_training_curves.png
+```
+
 ## Academic Integrity
 
 The implementation is original project code. External ideas, datasets, and architectures are cited in `report/references.bib` and in the report. The reported numbers are generated from saved CSV files in this repository; no experimental result is fabricated.
